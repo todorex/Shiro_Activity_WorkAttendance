@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <import resource="spring-mybatis.xml"/>
+    <!--Activity流程引擎配置事项-->
+    <bean id="processEngineConfiguration" class="org.activiti.spring.SpringProcessEngineConfiguration">
+        <!--数据源和系统同一个,23张表-->
+        <property name="dataSource" ref="dataSource"/>
+        <property name="transactionManager" ref="transactionManager"/>
+        <!--更新数据库表，如果没有则创建-->
+        <property name="databaseSchemaUpdate" value="true"/>
+        <!--<property name="databaseSchema" value="ACT"/>-->
+        <!--是否启动jobExecutor-->
+        <property name="jobExecutorActivate" value="false"/>
+        <property name="activityFontName" value="宋体"/>
+        <property name="labelFontName" value="宋体"/>
+        <property name="databaseType" value="mysql"/>
+        <!--自动部署流程-->
+        <property name="deploymentResources" value="classpath:workflow/*.bpmn"/>
+    </bean>
+
+    <!--流程引擎,引入配置-->
+    <bean id="processEngineFactory" class="org.activiti.spring.ProcessEngineFactoryBean">
+        <property name="processEngineConfiguration" ref="processEngineConfiguration"/>
+    </bean>
+
+    <!--工作流数据存储服务-->
+    <bean id="repositoryService" factory-bean="processEngineFactory" factory-method="getRepositoryService"/>
+
+    <!--工作流运行时服务-->
+    <bean id="runtimeService" factory-bean="processEngineFactory" factory-method="getRuntimeService"/>
+
+    <!--工作流任务服务-->
+    <bean id="taskService" factory-bean="processEngineFactory" factory-method="getTaskService"/>
+
+    <!--工作流历史服务-->
+    <bean id="historyService" factory-bean="processEngineFactory" factory-method="getHistoryService"/>
+
+    <!--工作流管理服务-->
+    <bean id="managementService" factory-bean="processEngineFactory" factory-method="getManagementService"/>
+
+    <!--工作流身份识别服务-->
+    <bean id="identityService" factory-bean="processEngineFactory" factory-method="getIdentityService"/>
+
+</beans>

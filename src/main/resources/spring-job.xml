@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="taskJob" class="com.todorex.common.task.AttendCheckTask"/>
+    <!--指定定时任务的类和方法-->
+    <bean id="jobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <!--Quartz是以组和类作为一个单位的，大部分情况不用管组，直接用指定类就好了-->
+        <property name="targetObject" ref="taskJob"/>
+        <property name="targetMethod" value="checkAttend"/>
+    </bean>
+
+    <!--配置触发器,触发定时任务-->
+    <bean id= "myTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobDetail"/>
+        <!--cron表达式-->
+        <property name="cronExpression">
+            <!--每天两点执行-->
+            <value>0 0 2 * * ? *</value>
+        </property>
+    </bean>
+
+    <!--配置调度工厂，调度粗触发器-->
+    <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <!--可配置多个trigger-->
+            <list>
+                <ref bean="myTrigger"/>
+            </list>
+        </property>
+    </bean>
+
+
+
+</beans>
